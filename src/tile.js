@@ -23,6 +23,10 @@ export class Tile {
     this.ship = ship;
   }
 
+  hasShip() {
+    return this.ship === null ? false : true;
+  }
+
   getShip() {
     return this.ship;
   }
