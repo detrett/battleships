@@ -52,18 +52,22 @@ export class Gameboard {
     return this.grid[row][col];
   }
 
+  getGrid() {
+    return this.grid;
+  }
+
   receiveAttack(row, col) {
     const tile = this.getTile(row, col);
     if (!tile.isHit()) {
       tile.attack();
       if (tile.hasShip()) {
         const ship = tile.getShip();
-        return this.attackShip(ship);
+        this.attackShip(ship);
       } else {
-        return `Tile ${tile.getCoordinates()} attacked!`;
+        console.log(`%cTile ${tile.getCoordinates()} attacked, it's a miss!`, 'color: darkslateblue');
       }
     } else {
-      return `Tile ${tile.getCoordinates()} has already been attacked!`;
+      console.log (`Tile ${tile.getCoordinates()} has already been attacked!`);
     }
   }
 
@@ -71,11 +75,11 @@ export class Gameboard {
     ship.hit();
     if (ship.isSunk()) {
       if (this.checkForGameOver()) {
-        return "Game Over! All ships have been sunk!";
+        console.log("Game Over! All ships have been sunk!");
       }
-      return `${ship.name} has been sunk!`;
+      console.log(`%c${ship.name} has been sunk!`, 'color: darkred; font-weight: bold');
     }
-    return `${ship.name} has been hit!`;
+    console.log(`%cA ${ship.name} has been hit!`, 'color: darkred; font-weight: bold');
   }
 
   checkForGameOver() {
@@ -206,16 +210,13 @@ export class Gameboard {
     return possiblePlacements;
   }
 
-  getGrid() {
-    return this.grid;
-  }
+
 
   printGridWithoutShips() {
     const stateSymbols = ['.', 'O', '.', 'X'];
     const boardRepresentation = this.grid.map(row => 
       row.map(tile => stateSymbols[tile.getState()]).join(' ')
     ).join('\n');
-    console.log("Enemy grid:")
     console.log(boardRepresentation);
   }
 
@@ -224,7 +225,6 @@ export class Gameboard {
     const boardRepresentation = this.grid.map(row => 
       row.map(tile => stateSymbols[tile.getState()]).join(' ')
     ).join('\n');
-    console.log("My Grid:")
     console.log(boardRepresentation);
   }
 }

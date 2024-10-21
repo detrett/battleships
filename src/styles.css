@@ -1,4 +1,4 @@
-/*** Reset ***/
+/*** RESET ***/
 
 html {
   box-sizing: border-box;
@@ -38,4 +38,30 @@ img {
 
 button:hover {
   cursor: pointer;
+}
+
+/** VARIABLES **/
+
+/** STYLES **/
+
+/*Grid*/
+.boards {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+#enemy-board, #player-board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+}
+
+.tile {
+  width: 2rem;
+  height: 2rem;
+
+  &.neutral {
+    background-color: ;
+  }
 }

@@ -2,9 +2,14 @@ import { Gameboard } from "./gameboard";
 
 export class Player {
   // Real or AI
-  constructor(playerType) {
+  constructor(playerName, playerType = "real") {
+    this.playerName = playerName;
     this.playerType = playerType;
     this.gameboard = new Gameboard();
+  }
+
+  getName() {
+    return this.playerName;
   }
 
   setBoard() {

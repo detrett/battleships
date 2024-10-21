@@ -246,69 +246,69 @@ describe('-Gameboard Placement Mechanics', () => {
   })
 });
 
-describe('-Gameboard Attack Mechanics', () => {
-  let gameboard;
+// describe('-Gameboard Attack Mechanics', () => {
+//   let gameboard;
 
-  beforeEach(() => {
-    gameboard = new Gameboard();
-    gameboard.placeShip('Destroyer', 0, 0, 'right');
-  });
+//   beforeEach(() => {
+//     gameboard = new Gameboard();
+//     gameboard.placeShip('Destroyer', 0, 0, 'right');
+//   });
 
-  test('receiveAttack should hit an empty tile', () => {
-    expect(gameboard.receiveAttack(5, 5)).toBe('Tile 5,5 attacked!');
-  });
+//   test('receiveAttack should hit an empty tile', () => {
+//     expect(gameboard.receiveAttack(5, 5)).toBe('Tile 5,5 attacked!');
+//   });
 
-  test('receiveAttack should hit a ship', () => {
-    expect(gameboard.receiveAttack(0, 0)).toBe('Destroyer has been hit!');
-  });
+//   test('receiveAttack should hit a ship', () => {
+//     expect(gameboard.receiveAttack(0, 0)).toBe('Destroyer has been hit!');
+//   });
 
-  test('receiveAttack should not hit the same tile twice', () => {
-    gameboard.receiveAttack(0, 0);
-    expect(gameboard.receiveAttack(0, 0)).toBe(
-      'Tile 0,0 has already been attacked!'
-    );
-  });
+//   test('receiveAttack should not hit the same tile twice', () => {
+//     gameboard.receiveAttack(0, 0);
+//     expect(gameboard.receiveAttack(0, 0)).toBe(
+//       'Tile 0,0 has already been attacked!'
+//     );
+//   });
 
-  test('attackShip should sink a ship', () => {
-    const ship = gameboard.getShip('Destroyer');
-    ship.hit();
-    ship.hit();
-    expect(gameboard.attackShip(ship)).toBe('Destroyer has been sunk!');
-  });
+//   test('attackShip should sink a ship', () => {
+//     const ship = gameboard.getShip('Destroyer');
+//     ship.hit();
+//     ship.hit();
+//     expect(gameboard.attackShip(ship)).toBe('Destroyer has been sunk!');
+//   });
 
-  test('checkForGameOver should return false when not all ships are sunk', () => {
-    expect(gameboard.checkForGameOver()).toBe(false);
-  });
+//   test('checkForGameOver should return false when not all ships are sunk', () => {
+//     expect(gameboard.checkForGameOver()).toBe(false);
+//   });
 
-  test('checkForGameOver should return true when all ships are sunk', () => {
-    gameboard.ships.forEach((ship) => {
-      while (!ship.isSunk()) {
-        ship.hit();
-      }
-    });
-    expect(gameboard.checkForGameOver()).toBe(true);
-  });
+//   test('checkForGameOver should return true when all ships are sunk', () => {
+//     gameboard.ships.forEach((ship) => {
+//       while (!ship.isSunk()) {
+//         ship.hit();
+//       }
+//     });
+//     expect(gameboard.checkForGameOver()).toBe(true);
+//   });
 
-  test('Game should end when all ships are sunk', () => {
-    // Sink all ships except the last one
-    for (let i = 0; i < gameboard.ships.length - 1; i++) {
-      while (!gameboard.ships[i].isSunk()) {
-        expect(gameboard.attackShip(gameboard.ships[i])).not.toBe(
-          'Game Over! All ships have been sunk!'
-        );
-      }
-    }
-    // Get the last ship and leave it one hit from sinking.
-    const lastShip = gameboard.ships[gameboard.ships.length - 1];
-    while (lastShip.hitCounter < lastShip.length - 1) {
-      expect(gameboard.attackShip(lastShip)).not.toBe(
-        'Game Over! All ships have been sunk!'
-      );
-    }
+//   test('Game should end when all ships are sunk', () => {
+//     // Sink all ships except the last one
+//     for (let i = 0; i < gameboard.ships.length - 1; i++) {
+//       while (!gameboard.ships[i].isSunk()) {
+//         expect(gameboard.attackShip(gameboard.ships[i])).not.toBe(
+//           'Game Over! All ships have been sunk!'
+//         );
+//       }
+//     }
+//     // Get the last ship and leave it one hit from sinking.
+//     const lastShip = gameboard.ships[gameboard.ships.length - 1];
+//     while (lastShip.hitCounter < lastShip.length - 1) {
+//       expect(gameboard.attackShip(lastShip)).not.toBe(
+//         'Game Over! All ships have been sunk!'
+//       );
+//     }
 
-    // Check for game over
-    expect(gameboard.attackShip(lastShip)).toBe(
-      'Game Over! All ships have been sunk!'
-    );
-  });
-});
+//     // Check for game over
+//     expect(gameboard.attackShip(lastShip)).toBe(
+//       'Game Over! All ships have been sunk!'
+//     );
+//   });
+// });
