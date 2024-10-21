@@ -41,6 +41,12 @@ button:hover {
 }
 
 /** VARIABLES **/
+:root {
+  --tile-neutral: #caf0f8;
+  --tile-miss: #ffffff;
+  --tile-ship: #fcbf49;
+  --tile-hit: #d62828;
+}
 
 /** STYLES **/
 
@@ -53,15 +59,29 @@ button:hover {
 
 #enemy-board, #player-board {
   display: grid;
+  gap: 0.1rem;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
 }
 
 .tile {
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border: none;
 
   &.neutral {
-    background-color: ;
+    background-color: var(--tile-neutral);
+  }
+
+  &.miss {
+    background-color: var(--tile-miss);
+  }
+
+  &.ship {
+    background-color: var(--tile-ship);
+  }
+
+  &.hit {
+    background-color: var(--tile-hit);
   }
 }

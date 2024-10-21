@@ -27,10 +27,12 @@ export class GameController {
 
   playRound(row, column) {
     const enemy = this.getInactivePlayer();
-    enemy.gameboard.receiveAttack(row, column);
+    const tie = enemy.gameboard.receiveAttack(row, column);
+
     if(enemy.gameboard.checkForGameOver()) {
+      console.log(`Game Over! All of ${enemy.getName()}'s ships have been sunk!`)
       // Reset
-    } else {
+    } else if (!tie) {
       this.switchPlayerTurn();
       this.printNewRound();
     }

@@ -1,17 +1,21 @@
-import { GameController } from './game-controller';
-import { Player } from './player';
+import { GameController } from "./game-controller";
+import { Player } from "./player";
 
 export class ScreenController {
   constructor() {
     this.gameController = this.initialize();
-    this.playerTurnDiv = document.getElementById('player-turn');
-    this.enemyBoardDiv = document.getElementById('enemy-board');
-    this.playerBoardDiv = document.getElementById('player-board');
+    this.playerTurnDiv = document.getElementById("player-turn");
+    this.enemyBoardDiv = document.getElementById("enemy-board");
+    this.playerBoardDiv = document.getElementById("player-board");
+
+    this.enemyBoardDiv.addEventListener("click", (event) => this.clickHandlerBoard(event));
+
+    this.updateScreen();
   }
 
   initialize() {
-    const player1 = new Player('Player 1');
-    const player2 = new Player('Player 2');
+    const player1 = new Player("Player 1");
+    const player2 = new Player("Player 2");
 
     player1.setBoard();
     player2.setBoard();
@@ -21,8 +25,8 @@ export class ScreenController {
 
   updateScreen() {
     // Clear grids
-    this.enemyBoardDiv.textContent = '';
-    this.playerBoardDiv.textContent = '';
+    this.enemyBoardDiv.textContent = "";
+    this.playerBoardDiv.textContent = "";
 
     // Get updated grids
     const enemy = this.gameController.getInactivePlayer();
@@ -34,36 +38,55 @@ export class ScreenController {
     this.playerTurnDiv.textContent = `${activePlayer.getName()}'s turn...`;
 
     // Update grids
-    this.updateGrid(this.enemyBoardDiv, enemyGrid);
-    this.updateGrid(this.playerBoardDiv, playerGrid)
+    this.updateGrid(this.enemyBoardDiv, enemyGrid, false);
+    this.updateGrid(this.playerBoardDiv, playerGrid, true);
   }
 
   // Helper method to update grids
-  updateGrid(div, grid) {
+  updateGrid(div, grid, showShips) {
     grid.forEach((row, r_index) =>
       row.map((tile, c_index) => {
-        const tileButton = document.createElement('button');
-        tileButton.classList.add('tile');
-        tileButton.dataset.row = r_index;
-        tileButton.dataset.column = c_index;
+        let element = "span";
+        if (!showShips) {
+          element = "button";
+        }
+        const tileEl = document.createElement(element);
+        tileEl.classList.add("tile");
+        tileEl.dataset.row = r_index;
+        tileEl.dataset.column = c_index;
 
         switch (tile.getState()) {
           case 0:
-            tileButton.classList.add('neutral');
+            tileEl.classList.add("neutral");
             break;
           case 1:
-            tileButton.classList.add('miss');
+            tileEl.classList.add("miss");
             break;
           case 2:
-            tileButton.classList.add('ship');
+            if (showShips) {
+              tileEl.classList.add("ship");
+            } else {
+              tileEl.classList.add("neutral");
+            }
             break;
           case 3:
-            tileButton.classList.add('hit');
+            tileEl.classList.add("hit");
             break;
         }
 
-        div.appendChild(tileButton);
+        div.appendChild(tileEl);
       })
     );
+  }
+
+  clickHandlerBoard(event) {
+    const selectedRow = event.target.dataset.row;
+    const selectedColumn = event.target.dataset.column;
+
+    if (!selectedColumn || !selectedRow) return;
+
+    console.log(selectedRow + selectedColumn)
+    this.gameController.playRound(selectedRow, selectedColumn);
+    this.updateScreen();
   }
 }

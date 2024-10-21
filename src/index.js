@@ -3,7 +3,6 @@ import "./styles.css";
 import { ScreenController } from "./screen-controller";
 
 const screenController = new ScreenController();
-screenController.updateScreen();
 
 // gameController.printNewRound();
 // gameController.playRound(4,3);

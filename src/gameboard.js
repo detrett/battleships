@@ -63,20 +63,20 @@ export class Gameboard {
       if (tile.hasShip()) {
         const ship = tile.getShip();
         this.attackShip(ship);
+        return false;
       } else {
         console.log(`%cTile ${tile.getCoordinates()} attacked, it's a miss!`, 'color: darkslateblue');
+        return false;
       }
     } else {
       console.log (`Tile ${tile.getCoordinates()} has already been attacked!`);
+      return true;
     }
   }
 
   attackShip(ship) {
     ship.hit();
     if (ship.isSunk()) {
-      if (this.checkForGameOver()) {
-        console.log("Game Over! All ships have been sunk!");
-      }
       console.log(`%c${ship.name} has been sunk!`, 'color: darkred; font-weight: bold');
     }
     console.log(`%cA ${ship.name} has been hit!`, 'color: darkred; font-weight: bold');
