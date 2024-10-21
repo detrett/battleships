@@ -71,6 +71,10 @@ describe('Tile', () => {
     expect(tile.getShip()).toBeNull();
   });
 
+  test('should start with state 0', () => {
+    expect(tile.getState()).toBe(0)
+  })
+
   test('attack() should set the tile as hit', () => {
     tile.attack();
     expect(tile.isHit()).toBeTruthy();
@@ -90,6 +94,27 @@ describe('Tile', () => {
     let ship = new Ship('Cruiser', 3);
     tile.setShip(ship);
     expect(tile.hasShip()).toBeTruthy();
+  });
+
+  test('setShip updates state correctly', () => {
+    const mockShip = { name: 'Destroyer' };
+    tile.setShip(mockShip);
+    expect(tile.ship).toBe(mockShip);
+    expect(tile.state).toBe(2);
+  });
+
+  test('attack updates state correctly', () => {
+    tile.attack();
+    expect(tile.hit).toBe(true);
+    expect(tile.state).toBe(1);
+  });
+
+  test('attack on tile with ship updates state correctly', () => {
+    const mockShip = { name: 'Destroyer' };
+    tile.setShip(mockShip);
+    tile.attack();
+    expect(tile.hit).toBe(true);
+    expect(tile.state).toBe(3);
   });
 });
 
@@ -215,6 +240,10 @@ describe('-Gameboard Placement Mechanics', () => {
 
     expect(result).toBe(false);
   });
+
+  test('getGrid returns grid', () => {
+    expect(gameboard.getGrid()).toBe(gameboard.grid);
+  })
 });
 
 describe('-Gameboard Attack Mechanics', () => {

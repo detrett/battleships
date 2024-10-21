@@ -21,14 +21,9 @@ export class Gameboard {
   }
 
   initializeGrid() {
-    const grid = [];
-    for (let i = 0; i < this.rows; i++) {
-      grid[i] = [];
-      for (let j = 0; j < this.columns; j++) {
-        grid[i].push(new Tile(i, j));
-      }
-    }
-    return grid;
+    return Array.from({ length: this.rows }, (_, row) =>
+      Array.from({ length: this.columns }, (_, col) => new Tile(row, col))
+    );
   }
 
   initializeShips() {
@@ -211,5 +206,25 @@ export class Gameboard {
     return possiblePlacements;
   }
 
-  printBoard() {}
+  getGrid() {
+    return this.grid;
+  }
+
+  printGridWithoutShips() {
+    const stateSymbols = ['.', 'O', '.', 'X'];
+    const boardRepresentation = this.grid.map(row => 
+      row.map(tile => stateSymbols[tile.getState()]).join(' ')
+    ).join('\n');
+    console.log("Enemy grid:")
+    console.log(boardRepresentation);
+  }
+
+  printGridWithShips() {
+    const stateSymbols = ['.', 'O', 'S', 'X'];
+    const boardRepresentation = this.grid.map(row => 
+      row.map(tile => stateSymbols[tile.getState()]).join(' ')
+    ).join('\n');
+    console.log("My Grid:")
+    console.log(boardRepresentation);
+  }
 }

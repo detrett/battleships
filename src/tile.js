@@ -5,6 +5,11 @@ export class Tile {
     this.coordinates = [row,column];
     this.hit = false;
     this.ship = null;
+    // 0: Neutral
+    // 1: Hit
+    // 2: Ship
+    // 3: Hit + Ship
+    this.state = 0;
   }
 
   getCoordinates() {
@@ -13,6 +18,7 @@ export class Tile {
 
   attack() {
     this.hit = true;
+    this.state = this.ship ? 3 : 1;
   }
 
   isHit() {
@@ -21,6 +27,7 @@ export class Tile {
 
   setShip(ship) {
     this.ship = ship;
+    this.state = 2;
   }
 
   hasShip() {
@@ -29,5 +36,13 @@ export class Tile {
 
   getShip() {
     return this.ship;
+  }
+
+  setState(state) {
+    this.state = state;
+  }
+
+  getState() {
+    return this.state;
   }
 }
