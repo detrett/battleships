@@ -56,6 +56,7 @@ export class Gameboard {
     return this.grid;
   }
 
+  // Returns true only when a tile has already been attacked
   receiveAttack(row, col) {
     const tile = this.getTile(row, col);
     if (!tile.isHit()) {

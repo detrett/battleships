@@ -8,14 +8,16 @@ export class ScreenController {
     this.enemyBoardDiv = document.getElementById("enemy-board");
     this.playerBoardDiv = document.getElementById("player-board");
 
-    this.enemyBoardDiv.addEventListener("click", (event) => this.clickHandlerBoard(event));
+    this.enemyBoardDiv.addEventListener("click", (event) =>
+      this.clickHandlerBoard(event)
+    );
 
     this.updateScreen();
   }
 
   initialize() {
     const player1 = new Player("Player 1");
-    const player2 = new Player("Player 2");
+    const player2 = new Player("Player 2", "ai");
 
     player1.setBoard();
     player2.setBoard();
@@ -85,8 +87,26 @@ export class ScreenController {
 
     if (!selectedColumn || !selectedRow) return;
 
-    console.log(selectedRow + selectedColumn)
+    console.log(selectedRow + selectedColumn);
     this.gameController.playRound(selectedRow, selectedColumn);
     this.updateScreen();
+
+    // VS AI
+    if (this.gameController.getInactivePlayer().playerType === "ai") {
+      this.disableBoardClicks();
+      setTimeout(() => {
+        this.gameController.playAIRound();
+        this.updateScreen();
+        this.enableBoardClicks();
+      }, 500);
+    }
+  }
+  // Disables clicks on the board
+  disableBoardClicks() {
+    this.enemyBoardDiv.style.pointerEvents = "none";
+  }
+  // Enables clicks on the board
+  enableBoardClicks() {
+    this.enemyBoardDiv.style.pointerEvents = "auto";
   }
 }
