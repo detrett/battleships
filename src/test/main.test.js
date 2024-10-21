@@ -84,13 +84,13 @@ describe('Tile', () => {
 
   test('hasShip should return false if tile has no ships', () => {
     expect(tile.hasShip()).toBeFalsy();
-  })
+  });
 
   test('hasShip should return true if tile has a ship', () => {
     let ship = new Ship('Cruiser', 3);
     tile.setShip(ship);
     expect(tile.hasShip()).toBeTruthy();
-  })
+  });
 });
 
 // Tests Gameboard class
@@ -102,8 +102,17 @@ describe('Gameboard', () => {
     gameboard = new Gameboard();
   });
 
-  test('should start with the correct grid size', () => {
-    expect(gameboard.grid.length).toBe(100);
+  test('initializeGrid should create a 2D array', () => {
+    expect(Array.isArray(gameboard.grid)).toBe(true);
+    expect(Array.isArray(gameboard.grid[0])).toBe(true);
+    expect(gameboard.grid.length).toBe(10);
+    expect(gameboard.grid[0].length).toBe(10);
+  });
+
+  test('getTile should return the correct tile', () => {
+    const tile = gameboard.getTile(5, 5);
+    expect(tile.row).toBe(5);
+    expect(tile.column).toBe(5);
   });
 
   test('should initialize with correct number of ships', () => {
@@ -111,8 +120,8 @@ describe('Gameboard', () => {
   });
 
   test('grid should contain Tile objects', () => {
-    expect(gameboard.grid[0]).toBeInstanceOf(Tile);
-    expect(gameboard.grid[99]).toBeInstanceOf(Tile);
+    expect(gameboard.grid[0][0]).toBeInstanceOf(Tile);
+    expect(gameboard.grid[9][9]).toBeInstanceOf(Tile);
   });
 
   test('ships should be Ship objects with correct properties', () => {
@@ -128,9 +137,9 @@ describe('Gameboard', () => {
   });
 
   test('grid tiles should have correct coordinates', () => {
-    expect(gameboard.grid[0].getCoordinates()).toBe('0,0');
-    expect(gameboard.grid[99].getCoordinates()).toBe('9,9');
-    expect(gameboard.grid[15].getCoordinates()).toBe('1,5');
+    expect(gameboard.grid[0][0].getCoordinates()).toBe('0,0');
+    expect(gameboard.grid[9][9].getCoordinates()).toBe('9,9');
+    expect(gameboard.grid[1][5].getCoordinates()).toBe('1,5');
   });
 
   test('placementList should be initialized with correct size', () => {
@@ -138,16 +147,16 @@ describe('Gameboard', () => {
   });
 
   test('placementList should contain entries for each tile', () => {
-    gameboard.grid.forEach((tile) => {
-      expect(gameboard.placementList.has(tile)).toBeTruthy();
-    });
+    for (let i = 0; i < gameboard.rows; i++) {
+      for (let j = 0; j < gameboard.columns; j++) {
+        expect(gameboard.placementList.has(gameboard.grid[i][j])).toBeTruthy();
+      }
+    }
   });
 
-  test('getShip() and getTile() should find the right ship and tile', () => {
+  test('getShip should find the right ship', () => {
     const shipResult = gameboard.getShip('Destroyer');
-    const tileResult = gameboard.getTile('0,0');
     expect(shipResult.name).toBe('Destroyer');
-    expect(tileResult.getCoordinates()).toBe('0,0');
   });
 });
 
@@ -159,51 +168,50 @@ describe('-Gameboard Placement Mechanics', () => {
   });
 
   test('corner tile should have two placement directions', () => {
-    const cornerTile = gameboard.grid[0]; // Top-left corner
+    const cornerTile = gameboard.grid[0][0]; // Top-left corner
     const placements = gameboard.placementList.get(cornerTile);
     expect(placements.size).toBe(2); // Should have 'right' and 'down'
   });
 
   test('edge tile should have three placement directions', () => {
-    const edgeTile = gameboard.grid[5]; // Top edge, not corner
+    const edgeTile = gameboard.grid[0][5]; // Top edge, not corner
     const placements = gameboard.placementList.get(edgeTile);
     expect(placements.size).toBe(3); // Should have 'left', 'right', and 'down'
   });
 
   test('center tile should have four placement directions', () => {
-    const centerTile = gameboard.grid[44]; // A central tile
+    const centerTile = gameboard.grid[4][4]; // A central tile
     const placements = gameboard.placementList.get(centerTile);
     expect(placements.size).toBe(4); // Should have all four directions
   });
 
   test('getPossiblePlacements should return correct placements for a ship', () => {
-    const centerTile = gameboard.grid[44]; // A central tile
+    const centerTile = gameboard.grid[4][4]; // A central tile
     const placements = gameboard.getPossiblePlacements(centerTile, 3);
     expect(placements[0].coordinates.length).toBe(3); // Should have 3 coordinates for a ship of length 3
   });
 
   test('placeShip should correctly place a ship', () => {
-    const result = gameboard.placeShip('Destroyer', '0,0', 'right');
+    const result = gameboard.placeShip('Destroyer', 0, 0, 'right');
 
     expect(result).toBe(true);
 
-    // Check that the ship is placed on the correct tiles
-    expect(gameboard.getTile('0,0').getShip().name).toBe('Destroyer');
-    expect(gameboard.getTile('0,1').getShip().name).toBe('Destroyer');
-    expect(gameboard.getTile('0,2').getShip().name).toBe('Destroyer');
-    // Check that the next tile doesn't have a ship
-    expect(gameboard.getTile('0,3').getShip()).toBeNull();
+    expect(gameboard.getTile(0, 0).getShip().name).toBe('Destroyer');
+    expect(gameboard.getTile(0, 1).getShip().name).toBe('Destroyer');
+    expect(gameboard.getTile(0, 2).getShip().name).toBe('Destroyer');
+
+    expect(gameboard.getTile(0, 3).getShip()).toBeNull();
   });
 
   test('placeShip should not place a ship on a direction that does not fit', () => {
-    const result = gameboard.placeShip('Destroyer', '0,0', 'left');
+    const result = gameboard.placeShip('Destroyer', 0, 0, 'left');
 
     expect(result).toBe(false);
   });
 
   test('placeShip should not place a ship on tiles that contain other ships', () => {
-    gameboard.placeShip('Destroyer', '0,0', 'right');
-    const result = gameboard.placeShip('Submarine', '0,1', 'down');
+    gameboard.placeShip('Destroyer', 0, 0, 'right');
+    const result = gameboard.placeShip('Submarine', 0, 1, 'down');
 
     expect(result).toBe(false);
   });
@@ -214,23 +222,64 @@ describe('-Gameboard Attack Mechanics', () => {
 
   beforeEach(() => {
     gameboard = new Gameboard();
+    gameboard.placeShip('Destroyer', 0, 0, 'right');
   });
 
-  test('receiveAttack should correctly hit a ship placed on the passed coordinates', () => {
-    gameboard.placeShip('Submarine', '0,0', 'right');
-    const result = gameboard.receiveAttack(0,0);
-    expect(result).toBe("Submarine ship attacked!");
+  test('receiveAttack should hit an empty tile', () => {
+    expect(gameboard.receiveAttack(5, 5)).toBe('Tile 5,5 attacked!');
   });
 
-  test('receiveAttack should correctly hit a tile without ships placed on the passed coordinates', () => {
-    const result = gameboard.receiveAttack(0,0);
-    expect(result).toBe("Tile 0,0 attacked!");
+  test('receiveAttack should hit a ship', () => {
+    expect(gameboard.receiveAttack(0, 0)).toBe('Destroyer has been hit!');
   });
 
-  test('receiveAttack should ignore attacks on previously attacked coordinates', () => {
-    gameboard.receiveAttack(0,0);
-    const result = gameboard.receiveAttack(0,0);
-    expect(result).toBe("Tile 0,0 has already been attacked!");
+  test('receiveAttack should not hit the same tile twice', () => {
+    gameboard.receiveAttack(0, 0);
+    expect(gameboard.receiveAttack(0, 0)).toBe(
+      'Tile 0,0 has already been attacked!'
+    );
   });
 
+  test('attackShip should sink a ship', () => {
+    const ship = gameboard.getShip('Destroyer');
+    ship.hit();
+    ship.hit();
+    expect(gameboard.attackShip(ship)).toBe('Destroyer has been sunk!');
+  });
+
+  test('checkForGameOver should return false when not all ships are sunk', () => {
+    expect(gameboard.checkForGameOver()).toBe(false);
+  });
+
+  test('checkForGameOver should return true when all ships are sunk', () => {
+    gameboard.ships.forEach((ship) => {
+      while (!ship.isSunk()) {
+        ship.hit();
+      }
+    });
+    expect(gameboard.checkForGameOver()).toBe(true);
+  });
+
+  test('Game should end when all ships are sunk', () => {
+    // Sink all ships except the last one
+    for (let i = 0; i < gameboard.ships.length - 1; i++) {
+      while (!gameboard.ships[i].isSunk()) {
+        expect(gameboard.attackShip(gameboard.ships[i])).not.toBe(
+          'Game Over! All ships have been sunk!'
+        );
+      }
+    }
+    // Get the last ship and leave it one hit from sinking.
+    const lastShip = gameboard.ships[gameboard.ships.length - 1];
+    while (lastShip.hitCounter < lastShip.length - 1) {
+      expect(gameboard.attackShip(lastShip)).not.toBe(
+        'Game Over! All ships have been sunk!'
+      );
+    }
+
+    // Check for game over
+    expect(gameboard.attackShip(lastShip)).toBe(
+      'Game Over! All ships have been sunk!'
+    );
+  });
 });

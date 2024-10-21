@@ -23,8 +23,9 @@ export class Gameboard {
   initializeGrid() {
     const grid = [];
     for (let i = 0; i < this.rows; i++) {
+      grid[i] = [];
       for (let j = 0; j < this.columns; j++) {
-        grid.push(new Tile(i, j));
+        grid[i].push(new Tile(i, j));
       }
     }
     return grid;
@@ -40,9 +41,11 @@ export class Gameboard {
 
   initializePlacementList() {
     let placementList = new Map();
-    this.grid.forEach((tile) => {
-      placementList.set(tile, new Set());
-    });
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        placementList.set(this.grid[i][j], new Set());
+      }
+    }
     return placementList;
   }
 
@@ -50,49 +53,60 @@ export class Gameboard {
     return this.ships.find((ship) => ship.name === name);
   }
 
-  getTile(coordinates) {
-    return this.grid.find(
-      (tile) => tile.getCoordinates() === coordinates
-    );
+  getTile(row, col) {
+    return this.grid[row][col];
   }
 
-  receiveAttack(row, column) {
-    const tile = this.getTile(`${row},${column}`);
-    if(!tile.isHit()) {
+  receiveAttack(row, col) {
+    const tile = this.getTile(row, col);
+    if (!tile.isHit()) {
       tile.attack();
-      if(tile.hasShip()) {
+      if (tile.hasShip()) {
         const ship = tile.getShip();
-        ship.hit();
-        return `${ship.name} ship attacked!`
+        return this.attackShip(ship);
       } else {
-        return `Tile ${tile.getCoordinates()} attacked!`
+        return `Tile ${tile.getCoordinates()} attacked!`;
       }
     } else {
-      return `Tile ${tile.getCoordinates()} has already been attacked!`
+      return `Tile ${tile.getCoordinates()} has already been attacked!`;
     }
   }
 
-  placeShip(shipName, coordinates, direction) {
+  attackShip(ship) {
+    ship.hit();
+    if (ship.isSunk()) {
+      if (this.checkForGameOver()) {
+        return "Game Over! All ships have been sunk!";
+      }
+      return `${ship.name} has been sunk!`;
+    }
+    return `${ship.name} has been hit!`;
+  }
+
+  checkForGameOver() {
+    return this.ships.every((ship) => ship.isSunk());
+  }
+
+  placeShip(shipName, row, col, direction) {
     const ship = this.getShip(shipName);
-    const tile = this.getTile(coordinates);
+    const tile = this.getTile(row, col);
 
     const placementCoordinates = this.checkShipPlacement(ship, tile, direction);
-    if(placementCoordinates.length > 0) {
-      placementCoordinates.forEach((coordinate) => {
-        const tile = this.getTile(coordinate);
-        tile.setShip(ship);
+    if (placementCoordinates.length > 0) {
+      placementCoordinates.forEach(([r, c]) => {
+        this.getTile(r, c).setShip(ship);
       });
       return true;
     }
     return false;
   }
 
-  // Helper function that returns the coordinates for placement 
+  // Helper function that returns the coordinates for placement
   checkShipPlacement(ship, tile, direction) {
     const placements = this.getPossiblePlacements(tile, ship.length);
 
     let placementCoordinates = [];
-    
+
     placements.forEach((placement) => {
       if (placement.direction === direction) {
         if (this.checkAvailability(placement.coordinates)) {
@@ -106,42 +120,43 @@ export class Gameboard {
 
   // Helper function that returns true if no ships are in the tiles passed
   checkAvailability(coordinatesArray) {
-    return coordinatesArray.every(coordinates => {
-      const tile = this.getTile(coordinates);
-      return tile.hasShip() === false;
+    return coordinatesArray.every(([row, col]) => {
+      const tile = this.getTile(row, col);
+      return tile.getShip() === null;
     });
   }
 
   // Adds possible placement options for each tile
   addPlacements() {
-    this.grid.forEach((tile) => {
-      const { row, column } = tile;
-
-      this.checkDirection(
-        tile,
-        "left",
-        (r, c) => [r, c - 1],
-        (r, c) => c >= 0
-      );
-      this.checkDirection(
-        tile,
-        "up",
-        (r, c) => [r - 1, c],
-        (r, c) => r >= 0
-      );
-      this.checkDirection(
-        tile,
-        "right",
-        (r, c) => [r, c + 1],
-        (r, c) => c < this.columns
-      );
-      this.checkDirection(
-        tile,
-        "down",
-        (r, c) => [r + 1, c],
-        (r, c) => r < this.rows
-      );
-    });
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.columns; col++) {
+        const tile = this.grid[row][col];
+        this.checkDirection(
+          tile,
+          "left",
+          (r, c) => [r, c - 1],
+          (r, c) => c >= 0
+        );
+        this.checkDirection(
+          tile,
+          "up",
+          (r, c) => [r - 1, c],
+          (r, c) => r >= 0
+        );
+        this.checkDirection(
+          tile,
+          "right",
+          (r, c) => [r, c + 1],
+          (r, c) => c < this.columns
+        );
+        this.checkDirection(
+          tile,
+          "down",
+          (r, c) => [r + 1, c],
+          (r, c) => r < this.rows
+        );
+      }
+    }
   }
 
   // Helper function to determine max distance up to 5 spaces in a direction of a tile
@@ -157,12 +172,16 @@ export class Gameboard {
       distance++;
 
       if (boundaryCheckFn(r, c)) {
-        placements.push(`${r},${c}`);
+        placements.push([r, c]);
       } else {
         break;
       }
     }
+
     if (placements.length > 0) {
+      if (!this.placementList.has(tile)) {
+        this.placementList.set(tile, new Set());
+      }
       const placementSet = this.placementList.get(tile);
       placementSet.add({ direction, placements });
     }
@@ -170,6 +189,10 @@ export class Gameboard {
 
   // Possible placements for a ship at a specific tile
   getPossiblePlacements(tile, shipLength) {
+    if (!this.placementList.has(tile)) {
+      return [];
+    }
+    
     const placementSet = this.placementList.get(tile);
     const possiblePlacements = [];
 
@@ -178,7 +201,7 @@ export class Gameboard {
         possiblePlacements.push({
           direction,
           coordinates: [
-            tile.getCoordinates(),
+            [tile.row, tile.column],
             ...placements.slice(0, shipLength - 1),
           ],
         });
@@ -187,4 +210,6 @@ export class Gameboard {
 
     return possiblePlacements;
   }
+
+  printBoard() {}
 }
