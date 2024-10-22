@@ -1,4 +1,4 @@
-# Weather Forecast Application
+# Battleships!
 
 ![battleships](https://github.com/user-attachments/assets/ba59d8f0-a0ea-4a3f-ad8b-b4bb346ab8e9)
 
