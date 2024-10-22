@@ -10,9 +10,14 @@ export class ScreenController {
     this.enemyBoardDiv = document.getElementById("enemy-board");
     this.playerBoardDiv = document.getElementById("player-board");
     this.resetButton = document.getElementById("reset-button");
+    this.resetPlacements = document.getElementById('reset-placement-button');
     if (this.resetButton) {
       this.resetButton.addEventListener("click", () => this.resetGame());
     }
+
+    this.resetPlacements.addEventListener('click', () => {
+      this.setupPlacementPhase();
+    })
   }
 
   setupPlacementPhase() {
@@ -29,7 +34,7 @@ export class ScreenController {
   }
 
   startGame() {
-    document.querySelector('.placement-container').style.display = 'none';
+    document.querySelector('#placement-container').style.display = 'none';
     document.getElementById('game-container').style.display = 'block';
 
     this.enemyBoardDiv.addEventListener("click", (event) =>
@@ -137,7 +142,7 @@ export class ScreenController {
   }
 
   resetGame() {
-    document.querySelector('.placement-container').style.display = 'flex';
+    document.querySelector('#placement-container').style.display = 'block';
     document.getElementById('game-container').style.display = 'none';
 
     this.setupPlacementPhase();
