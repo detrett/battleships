@@ -13,10 +13,36 @@ export class Player {
   }
 
   setBoard() {
-    this.gameboard.placeShip("Carrier", 0, 0, "right");
-    this.gameboard.placeShip("Battleship", 2, 5, "down");
-    this.gameboard.placeShip("Destroyer", 3, 9, "left");
-    this.gameboard.placeShip("Submarine", 7, 6, "down");
-    this.gameboard.placeShip("Patrol Boat", 9, 0, "up");
+    const ships = [
+      { name: "Carrier", length: 5 },
+      { name: "Battleship", length: 4 },
+      { name: "Destroyer", length: 3 },
+      { name: "Submarine", length: 3 },
+      { name: "Patrol Boat", length: 2 },
+    ];
+
+    ships.forEach((ship) => {
+      let placed = false;
+
+      // Keep trying until the ship is successfully placed
+      while (!placed) {
+        const direction = this.getRandomInt(2) === 0 ? "right" : "down";
+        let row, col;
+
+        if (direction === "right") {
+          row = this.getRandomInt(10);
+          col = this.getRandomInt(10 - ship.length);
+        } else {
+          row = this.getRandomInt(10 - ship.length);
+          col = this.getRandomInt(10);
+        }
+        placed = this.gameboard.placeShip(ship.name, row, col, direction);
+      }
+    });
+  }
+
+  // Helper function to get a random number
+  getRandomInt(max) {
+    return Math.floor(Math.random() * max);
   }
 }
