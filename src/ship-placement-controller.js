@@ -84,7 +84,7 @@ export class ShipPlacementController {
   }
 
   renderPlacementBoard() {
-    const board = document.getElementById('placement-board');
+    const board = document.getElementById('player-board');
     this.clearElement(board);
 
     for (let row = 0; row < 10; row++) {

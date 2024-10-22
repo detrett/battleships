@@ -4,20 +4,21 @@ import { ShipPlacementController } from "./ship-placement-controller";
 
 export class ScreenController {
   constructor() {
-    this.setupPlacementPhase();
     this.gameController = null;
     this.playerTurnDiv = document.getElementById("player-turn");
     this.enemyBoardDiv = document.getElementById("enemy-board");
     this.playerBoardDiv = document.getElementById("player-board");
     this.resetButton = document.getElementById("reset-button");
-    this.resetPlacements = document.getElementById('reset-placement-button');
+
     if (this.resetButton) {
       this.resetButton.addEventListener("click", () => this.resetGame());
     }
+    this.enemyBoardDiv.addEventListener("click", (event) =>
+      this.clickHandlerBoard(event)
+    );
 
-    this.resetPlacements.addEventListener('click', () => {
-      this.setupPlacementPhase();
-    })
+    this.disableBoardClicks();
+    this.setupPlacementPhase();
   }
 
   setupPlacementPhase() {
@@ -25,6 +26,7 @@ export class ScreenController {
     const player2 = new Player("Player 2", "ai");
 
     player2.setBoard();
+    this.updateGrid(this.enemyBoardDiv, player2.gameboard.getGrid(), false);
 
     new ShipPlacementController(player1, () => {
       this.gameController = new GameController(player1, player2);
@@ -35,13 +37,7 @@ export class ScreenController {
 
   startGame() {
     document.querySelector('#placement-container').style.display = 'none';
-    document.getElementById('game-container').style.display = 'block';
-
-    this.enemyBoardDiv.addEventListener("click", (event) =>
-      this.clickHandlerBoard(event)
-    );
     this.enableBoardClicks();
-    this.updateScreen();
   }
 
   updateScreen() {
@@ -65,6 +61,7 @@ export class ScreenController {
 
   // Helper method to update grids
   updateGrid(div, grid, showShips) {
+    div.textContent = "";
     grid.forEach((row, r_index) =>
       row.map((tile, c_index) => {
         let element = "span";
@@ -119,6 +116,7 @@ export class ScreenController {
 
     // VS AI
     if (this.gameController.getInactivePlayer().playerType === "ai") {
+      this.playerTurnDiv.textContent = `AI's turn...`;
       this.disableBoardClicks();
       setTimeout(() => {
         const isAIgameOver = this.gameController.playAIRound();
@@ -142,8 +140,13 @@ export class ScreenController {
   }
 
   resetGame() {
+    this.disableBoardClicks();
     document.querySelector('#placement-container').style.display = 'block';
-    document.getElementById('game-container').style.display = 'none';
+    this.playerTurnDiv.textContent = ``;
+
+    this.enemyBoardDiv.removeEventListener("click", (event) =>
+      this.clickHandlerBoard(event)
+    );
 
     this.setupPlacementPhase();
   }

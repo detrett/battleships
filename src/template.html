@@ -7,8 +7,9 @@
   </head>
   <body>
     <div id="game-container">
-      <div id="player-turn"></div>
-      <button id="reset-button">Reset</button>
+      <button id="reset-button"><span class="icon reset"></span></button>
+
+      
       <div class="boards">
         <div class="player">
           <h2>Player 1</h2>
@@ -20,18 +21,18 @@
         </div>
       </div>
     </div>
+
+    <div id="player-turn"></div>
+
     <div id="placement-container">
-      <button id="reset-placement-button">Reset</button>
       <div class="placement-container">
-        <div id="ship-dock"></div>
-        <div>
-          <div id="placement-board"></div>
-          <div class="rotation-controls">
-            <p id="rotation-display">Rotation: horizontal</p>
-            <p>Press 'R' or right-click to rotate</p>
-          </div>
+        <div class="rotation-controls">
+          <p id="rotation-display">Rotation: horizontal</p>
+          <p>Press 'R' to rotate</p>
         </div>
+        <div id="ship-dock"></div>
       </div>
     </div>
+    
   </body>
 </html>
