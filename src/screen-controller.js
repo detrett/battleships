@@ -1,33 +1,42 @@
 import { GameController } from "./game-controller";
 import { Player } from "./player";
+import { ShipPlacementController } from "./ship-placement-controller";
 
 export class ScreenController {
   constructor() {
-    this.gameController = this.initialize();
+    this.setupPlacementPhase();
+    this.gameController = null;
     this.playerTurnDiv = document.getElementById("player-turn");
     this.enemyBoardDiv = document.getElementById("enemy-board");
     this.playerBoardDiv = document.getElementById("player-board");
     this.resetButton = document.getElementById("reset-button");
+    if (this.resetButton) {
+      this.resetButton.addEventListener("click", () => this.resetGame());
+    }
+  }
+
+  setupPlacementPhase() {
+    const player1 = new Player("Player 1");
+    const player2 = new Player("Player 2", "ai");
+
+    player2.setBoard();
+
+    new ShipPlacementController(player1, () => {
+      this.gameController = new GameController(player1, player2);
+      this.startGame();
+    })
+
+  }
+
+  startGame() {
+    document.querySelector('.placement-container').style.display = 'none';
+    document.getElementById('game-container').style.display = 'block';
 
     this.enemyBoardDiv.addEventListener("click", (event) =>
       this.clickHandlerBoard(event)
     );
-
-    if (this.resetButton) {
-      this.resetButton.addEventListener("click", () => this.resetGame());
-    }
-
+    this.enableBoardClicks();
     this.updateScreen();
-  }
-
-  initialize() {
-    const player1 = new Player("Player 1");
-    const player2 = new Player("Player 2", "ai");
-
-    player1.setBoard();
-    player2.setBoard();
-
-    return new GameController(player1, player2);
   }
 
   updateScreen() {
@@ -128,24 +137,19 @@ export class ScreenController {
   }
 
   resetGame() {
-    const player1 = new Player(this.gameController.players[0].getName());
-    const player2 = new Player(this.gameController.players[1].getName(), this.gameController.players[1].playerType);
+    document.querySelector('.placement-container').style.display = 'flex';
+    document.getElementById('game-container').style.display = 'none';
 
-    player1.setBoard();
-    player2.setBoard();
-
-    this.gameController = new GameController(player1, player2)
-    this.enableBoardClicks();
-    this.updateScreen();
+    this.setupPlacementPhase();
   }
 
   handleGameOver() {
     this.disableBoardClicks();
     const winner = this.gameController.getInactivePlayer().getName();
     this.playerTurnDiv.textContent = `Game Over! ${winner} wins!`;
-    
+
     setTimeout(() => {
-      if (confirm('Game Over! Would you like to play again?')) {
+      if (confirm("Game Over! Would you like to play again?")) {
         this.resetGame();
       }
     }, 100);

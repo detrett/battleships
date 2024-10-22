@@ -85,3 +85,68 @@ button:hover {
     background-color: var(--tile-hit);
   }
 }
+
+/*Placement*/
+.placement-container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+#ship-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+#placement-board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.25rem;
+}
+
+.valid-placement {
+  background: rgba(0, 255, 0, 0.2);
+}
+
+.invalid-placement {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.rotation-controls {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.ship.dragging {
+  opacity: 0.5;
+}
+
+.placeship {
+  display: flex;
+  cursor: move;
+  padding: 0.5rem;
+  background: #fff;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+
+.placeship-cell {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #666;
+  background: #4a90e2;
+}
+
+.ship-carrier .placeship-cell { background: #4a90e2; }
+.ship-battleship .placeship-cell { background: #50c878; }
+.ship-destroyer .placeship-cell { background: #ff6b6b; }
+.ship-submarine .placeship-cell { background: #ffd700; }
+.ship-patrol-boat .placeship-cell { background: #9370db; }
+
+#game-container {
+  display: none;
+}
