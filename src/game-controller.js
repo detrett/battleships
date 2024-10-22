@@ -37,13 +37,14 @@ export class GameController {
       console.log(
         `Game Over! All of ${enemy.getName()}'s ships have been sunk!`
       );
-      // Reset
+      return true;
     }
     // if not a tie
     else if (!tie && enemy.playerType !== "ai") {
       this.switchPlayerTurn();
-      this.printNewRound();
+      // this.printNewRound();
     }
+    return false;
   }
 
   playAIRound() {
@@ -60,7 +61,21 @@ export class GameController {
       console.log(
         `Game Over! All of ${player.getName()}'s ships have been sunk!`
       );
-      // Reset
+      return true;
     } 
+    return false;
+  }
+
+  resetGame() {
+    const player1 = new Player(this.players[0].getName());
+    const player2 = new Player(this.players[1].getName(), this.players[1].playerType);
+    
+    player1.setBoard();
+    player2.setBoard();
+    
+    this.players = [player1, player2];
+    this.activePlayer = this.players[0];
+    
+    return this;
   }
 }

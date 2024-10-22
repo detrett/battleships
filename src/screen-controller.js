@@ -7,10 +7,15 @@ export class ScreenController {
     this.playerTurnDiv = document.getElementById("player-turn");
     this.enemyBoardDiv = document.getElementById("enemy-board");
     this.playerBoardDiv = document.getElementById("player-board");
+    this.resetButton = document.getElementById("reset-button");
 
     this.enemyBoardDiv.addEventListener("click", (event) =>
       this.clickHandlerBoard(event)
     );
+
+    if (this.resetButton) {
+      this.resetButton.addEventListener("click", () => this.resetGame());
+    }
 
     this.updateScreen();
   }
@@ -87,17 +92,29 @@ export class ScreenController {
 
     if (!selectedColumn || !selectedRow) return;
 
-    console.log(selectedRow + selectedColumn);
-    this.gameController.playRound(selectedRow, selectedColumn);
+    const isGameOver = this.gameController.playRound(
+      selectedRow,
+      selectedColumn
+    );
     this.updateScreen();
+
+    if (isGameOver) {
+      this.handleGameOver();
+      return;
+    }
 
     // VS AI
     if (this.gameController.getInactivePlayer().playerType === "ai") {
       this.disableBoardClicks();
       setTimeout(() => {
-        this.gameController.playAIRound();
+        const isAIgameOver = this.gameController.playAIRound();
         this.updateScreen();
-        this.enableBoardClicks();
+
+        if (isAIgameOver) {
+          this.handleGameOver();
+        } else {
+          this.enableBoardClicks();
+        }
       }, 500);
     }
   }
@@ -108,5 +125,29 @@ export class ScreenController {
   // Enables clicks on the board
   enableBoardClicks() {
     this.enemyBoardDiv.style.pointerEvents = "auto";
+  }
+
+  resetGame() {
+    const player1 = new Player(this.gameController.players[0].getName());
+    const player2 = new Player(this.gameController.players[1].getName(), this.gameController.players[1].playerType);
+
+    player1.setBoard();
+    player2.setBoard();
+
+    this.gameController = new GameController(player1, player2)
+    this.enableBoardClicks();
+    this.updateScreen();
+  }
+
+  handleGameOver() {
+    this.disableBoardClicks();
+    const winner = this.gameController.getInactivePlayer().getName();
+    this.playerTurnDiv.textContent = `Game Over! ${winner} wins!`;
+    
+    setTimeout(() => {
+      if (confirm('Game Over! Would you like to play again?')) {
+        this.resetGame();
+      }
+    }, 100);
   }
 }
